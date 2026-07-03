@@ -11,3 +11,36 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Titular {
+  id          Int      @id @default(autoincrement())
+  nombres     String
+  apellidos   String
+  dni         String   @unique
+  telefono    String
+  parentesco  String
+
+  difuntos    Difunto[]
+
+  createdAt   DateTime @default(now())
+
+  @@map("titulares")
+}
+
+model Difunto {
+  id                    Int      @id @default(autoincrement())
+  nombres               String
+  apellidos             String
+  fechaFallecimiento    DateTime
+  fechaRegistro         DateTime @default(now())
+
+  documentoDefuncionUrl String?
+  comprobanteUrl        String?
+  fotografiaNichoUrl    String?
+
+  titular               Titular  @relation(fields: [titularId], references: [id])
+  titularId             Int
+
+  @@unique([nombres, apellidos, fechaFallecimiento])
+  @@map("difuntos")
+}
