@@ -1,3 +1,5 @@
+import { LuPhone, LuClock } from "react-icons/lu";
+
 export default function Header() {
   return (
     <header>
@@ -9,9 +11,15 @@ export default function Header() {
             <p className="text-lg font-bold text-green-800 leading-tight">HUALHUAS</p>
           </div>
         </div>
-        <div className="flex items-center gap-6 text-sm text-gray-600">
-          <span>(01) 123 4567</span>
-          <span>Lun - Vie: 8:00 a. m. - 4:00 p. m.</span>
+        <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 justify-center">
+          <span className="flex items-center gap-2">
+            <LuPhone className="w-4 h-4 text-green-700" />
+            (01) 123 4567
+          </span>
+          <span className="flex items-center gap-2">
+            <LuClock className="w-4 h-4 text-green-700" />
+            Lun - Vie: 8:00 a. m. - 4:00 p. m.
+          </span>
         </div>
       </div>
 
