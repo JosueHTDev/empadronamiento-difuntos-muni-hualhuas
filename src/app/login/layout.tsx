@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 export const metadata = {
-  title: "Panel de Registros - Municipalidad de Hualhuas",
+  title: "Inicio sesion personal - Municipalidad de Hualhuas",
 };
 
 export default function AdminLayout({

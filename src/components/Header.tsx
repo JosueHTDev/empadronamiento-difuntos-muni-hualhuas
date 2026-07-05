@@ -1,38 +1,41 @@
-import { LuPhone, LuClock } from "react-icons/lu";
+import { LuPhone, LuClock, LuUser } from 'react-icons/lu'
+import { getSession } from '@/lib/session'
+import { LogoutButton } from '@/components/LogoutButton'
 
-export default function Header() {
+export default async function Header() {
+  const session = await getSession()
+
   return (
-    <header>
-      <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-green-800 rounded-full" />
-          <div>
-            <p className="text-xs text-gray-500 leading-none">Municipalidad Distrital de</p>
-            <p className="text-lg font-bold text-green-800 leading-tight">HUALHUAS</p>
-          </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 justify-center">
-          <span className="flex items-center gap-2">
-            <LuPhone className="w-4 h-4 text-green-700" />
-            (01) 123 4567
-          </span>
-          <span className="flex items-center gap-2">
-            <LuClock className="w-4 h-4 text-green-700" />
-            Lun - Vie: 8:00 a. m. - 4:00 p. m.
-          </span>
-        </div>
+    <header className="bg-green-800 text-white px-4 py-3 flex items-center justify-between">
+      <div>
+        <p className="font-semibold text-sm">Municipalidad Distrital de Hualhuas</p>
+        <p className="text-xs text-green-100">Empadronamiento Cementerio General</p>
       </div>
 
-      <div className="bg-linear-to-r from-green-900 to-green-700 text-white px-6 py-10 flex items-center justify-between">
-        <div className="max-w-xl">
-          <h1 className="text-2xl font-bold mb-2">
-            Registro y Empadronamiento del Cementerio General de Hualhuas
-          </h1>
-          <p className="text-green-100 text-sm">
-            Complete el formulario con los datos solicitados y adjunte los documentos requeridos.
-          </p>
-        </div>
+      <div className="flex items-center gap-4">
+        {!session && (
+          <div className="hidden sm:flex items-center gap-4 text-xs text-green-100">
+            <span className="flex items-center gap-1">
+              <LuPhone className="w-4 h-4" />
+              (064) 123-456
+            </span>
+            <span className="flex items-center gap-1">
+              <LuClock className="w-4 h-4" />
+              Lun - Vie, 8am - 4pm
+            </span>
+          </div>
+        )}
+
+        {session && (
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-1 text-sm text-green-100">
+              <LuUser className="w-4 h-4" />
+              {session.usuario}
+            </span>
+            <LogoutButton />
+          </div>
+        )}
       </div>
     </header>
-  );
+  )
 }

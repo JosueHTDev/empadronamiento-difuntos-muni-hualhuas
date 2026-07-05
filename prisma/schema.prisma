@@ -44,3 +44,13 @@ model Difunto {
   @@unique([nombres, apellidos, fechaFallecimiento])
   @@map("difuntos")
 }
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  usuario   String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("usuarios")
+}
