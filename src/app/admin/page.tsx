@@ -1,36 +1,28 @@
-import { obtenerDifuntosAction } from "@/actions/difunto.actions";
+"use client";
 
-export default async function AdminPage() {
-  const difuntos = await obtenerDifuntosAction();
+import { useState } from "react";
+import { registrosMock } from "@/lib/mockRegistros";
+import { RegistroTitular } from "@/types/registro.types";
+import TablaRegistros from "@/components/TablaRegistros";
+import ModalDetalleRegistro from "@/components/ModalDetalleRegistro";
+
+export default function AdminPage() {
+  const [registroSeleccionado, setRegistroSeleccionado] = useState<RegistroTitular | null>(null);
+
   return (
-    <div className="flex flex-col gap-4 p-4 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Panel de Registros</h1>
+    <div className="flex flex-col gap-4 p-4 md:p-5 max-w-7xl mx-auto w-full">
       <div>
-        <table className="w-full border-collapse border">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border p-2 text-left">Nombres</th>
-              <th className="border p-2 text-left">Apellidos</th>
-              <th className="border p-2 text-left">Fecha fallecimiento</th>
-              <th className="border p-2 text-left">Titular</th>
-            </tr>
-          </thead>
-          <tbody>
-            {difuntos.map((difunto) => (
-              <tr key={difunto.id}>
-                <td className="border p-2">{difunto.nombres}</td>
-                <td className="border p-2">{difunto.apellidos}</td>
-                <td className="border p-2">
-                  {difunto.fechaFallecimiento.toLocaleDateString('es-PE')}
-                </td>
-                <td className="border p-2">
-                  {difunto.titular.nombres} {difunto.titular.apellidos}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <h1 className="text-xl md:text-2xl font-bold text-gray-900">Registros de Formularios</h1>
+        <p className="text-sm text-gray-500">Consulta y gestión de formularios recibidos</p>
       </div>
+
+      <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6 w-full">
+        <TablaRegistros registros={registrosMock} onVerDetalle={setRegistroSeleccionado} />
+      </div>
+
+      {registroSeleccionado && (
+        <ModalDetalleRegistro registro={registroSeleccionado} onCerrar={() => setRegistroSeleccionado(null)} />
+      )}
     </div>
   );
 }
