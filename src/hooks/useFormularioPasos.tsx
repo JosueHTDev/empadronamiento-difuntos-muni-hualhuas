@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { registrarDifuntoAction } from "@/actions/difunto.actions";
 
 export const PASOS = [
   { id: 1, nombre: "Datos del Titular" },
@@ -42,6 +43,9 @@ const dataInicial: FormularioData = {
 export function useFormularioPasos() {
   const [pasoActual, setPasoActual] = useState(1);
   const [data, setData] = useState<FormularioData>(dataInicial);
+  const [enviando, setEnviando] = useState(false);
+  const [errores, setErrores] = useState<Record<string, string[]> | null>(null);
+  const [mostrarExito, setMostrarExito] = useState(false);
 
   const actualizarTitular = (campo: keyof FormularioData["titular"], valor: any) =>
     setData((prev) => ({ ...prev, titular: { ...prev.titular, [campo]: valor } }));
@@ -67,11 +71,55 @@ export function useFormularioPasos() {
     if (pasoActual > 1) setPasoActual(pasoActual - 1);
   };
 
-  const enviarFormulario = () => setData((prev) => ({ ...prev, enviado: true }));
+  const enviarFormulario = async () => {
+    setEnviando(true);
+    setErrores(null);
+
+    const formData = new FormData();
+    formData.append("titularNombres", data.titular.nombre);
+    formData.append("titularApellidos", data.titular.apellido);
+    formData.append("titularDni", data.titular.dni);
+    formData.append("titularTelefono", data.titular.telefono);
+    formData.append("titularParentesco", data.titular.parentesco);
+    if (data.titular.archivoDni) {
+      formData.append("titularArchivoDni", data.titular.archivoDni);
+    }
+
+    formData.append("difuntoNombres", data.difunto.nombres);
+    formData.append("difuntoApellidos", data.difunto.apellidos);
+    formData.append("difuntoFechaFallecimiento", data.difunto.fechaFallecimiento);
+    formData.append("difuntoUbicacionNicho", data.difunto.ubicacionNicho);
+
+    if (data.documentos.comprobantePago) {
+      formData.append("comprobantePago", data.documentos.comprobantePago);
+    }
+    if (data.documentos.actaDefuncion) {
+      formData.append("actaDefuncion", data.documentos.actaDefuncion);
+    }
+    if (data.documentos.fotografiaNicho) {
+      formData.append("fotografiaNicho", data.documentos.fotografiaNicho);
+    }
+
+    const resultado = await registrarDifuntoAction(formData);
+
+    setEnviando(false);
+
+    if (!resultado.success) {
+      setErrores(resultado.errors ?? null);
+      return;
+    }
+
+    // Éxito: limpiar todo y volver al paso 1
+    setData(dataInicial);
+    setPasoActual(1);
+    setMostrarExito(true);
+    setTimeout(() => setMostrarExito(false), 5000);
+  };
 
   const limpiarFormulario = () => {
     setData(dataInicial);
     setPasoActual(1);
+    setErrores(null);
   };
 
   return {
@@ -85,6 +133,9 @@ export function useFormularioPasos() {
     siguientePaso,
     pasoAnterior,
     enviarFormulario,
+    enviando,
+    errores,
+    mostrarExito,
     limpiarFormulario,
   };
 }

@@ -31,11 +31,10 @@ export default function ModalDetalleRegistro({
                 <button
                   key={d.id}
                   onClick={() => setDifuntoActivo(i)}
-                  className={`text-xs font-medium px-3 py-1.5 rounded-md border ${
-                    i === difuntoActivo
-                      ? "bg-green-700 text-white border-green-700"
-                      : "text-gray-600 border-gray-300 hover:bg-gray-50"
-                  }`}
+                  className={`text-xs font-medium px-3 py-1.5 rounded-md border ${i === difuntoActivo
+                    ? "bg-green-700 text-white border-green-700"
+                    : "text-gray-600 border-gray-300 hover:bg-gray-50"
+                    }`}
                 >
                   {d.nombres} {d.apellidos}
                 </button>
@@ -49,11 +48,15 @@ export default function ModalDetalleRegistro({
               <span className="text-gray-500">Nombre completo:</span>
               <span className="text-gray-800">{difunto.nombres} {difunto.apellidos}</span>
               <span className="text-gray-500">Fecha de fallecimiento:</span>
-              <span className="text-gray-800">{difunto.fechaFallecimiento}</span>
+              <span className="text-gray-800">
+                {new Date(difunto.fechaFallecimiento).toLocaleDateString('es-PE')}
+              </span>
               <span className="text-gray-500">Ubicación del nicho:</span>
               <span className="text-gray-800">{difunto.ubicacionNicho}</span>
               <span className="text-gray-500">Fecha de registro:</span>
-              <span className="text-gray-800">{difunto.fechaRegistro}</span>
+              <span className="text-gray-800">
+                {new Date(difunto.fechaRegistro).toLocaleDateString('es-PE', { dateStyle: 'medium' })}
+              </span>
             </div>
           </div>
 
@@ -64,8 +67,8 @@ export default function ModalDetalleRegistro({
                 <div key={doc.nombre} className="flex items-center justify-between text-sm border border-gray-200 rounded-md px-3 py-2">
                   <span className="text-gray-700">{doc.nombre}</span>
                   <div className="flex gap-3 text-green-700 font-medium">
-                    <button>Ver</button>
-                    <button>Descargar</button>
+                    <a href={doc.url} target="_blank" rel="noopener noreferrer">Ver</a>
+                    <a href={doc.url} download>Descargar</a>
                   </div>
                 </div>
               ))}

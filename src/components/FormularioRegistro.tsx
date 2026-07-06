@@ -72,11 +72,20 @@ export default function FormularioRegistro() {
     siguientePaso,
     pasoAnterior,
     enviarFormulario,
+    enviando,
+    errores,
+    mostrarExito,
     limpiarFormulario,
   } = useFormularioPasos();
 
   return (
-    <div className="px-6 pb-10">
+    <div className="px-6 pb-10 relative">
+      {mostrarExito && (
+        <div className="fixed top-6 right-6 bg-green-700 text-white px-5 py-3 rounded-lg shadow-lg z-[999] text-sm font-medium">
+          ✓ Formulario enviado correctamente
+        </div>
+      )}
+
       <PasosIndicador pasoActual={pasoActual} completados={completados} />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 mt-6">
@@ -158,15 +167,20 @@ export default function FormularioRegistro() {
                 </div>
               </div>
 
-              {data.enviado ? (
-                <p className="mt-5 text-green-700 text-sm font-medium">✓ Formulario enviado correctamente.</p>
-              ) : (
-                <button
-                  onClick={enviarFormulario}
-                  className="mt-5 bg-green-700 text-white rounded-md px-5 py-2 text-sm font-medium hover:bg-green-800"
-                >
-                  Enviar formulario
-                </button>
+              <button
+                onClick={enviarFormulario}
+                disabled={enviando}
+                className="mt-5 bg-green-700 text-white rounded-md px-5 py-2 text-sm font-medium hover:bg-green-800 disabled:bg-gray-400"
+              >
+                {enviando ? "Enviando..." : "Enviar formulario"}
+              </button>
+
+              {errores && (
+                <ul className="mt-3 text-red-600 text-xs space-y-1">
+                  {Object.entries(errores).map(([campo, msgs]) => (
+                    <li key={campo}>{campo}: {msgs.join(", ")}</li>
+                  ))}
+                </ul>
               )}
             </section>
           )}
