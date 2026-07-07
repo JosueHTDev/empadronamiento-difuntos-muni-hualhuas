@@ -22,6 +22,7 @@ export interface FormularioData {
   difunto: {
     nombres: string;
     apellidos: string;
+    dni: string;
     fechaFallecimiento: string;
     ubicacionNicho: string;
   };
@@ -35,7 +36,7 @@ export interface FormularioData {
 
 const dataInicial: FormularioData = {
   titular: { nombre: "", apellido: "", dni: "", telefono: "", parentesco: "", archivoDni: null },
-  difunto: { nombres: "", apellidos: "", fechaFallecimiento: "", ubicacionNicho: "" },
+  difunto: { nombres: "", apellidos: "", dni: "", fechaFallecimiento: "", ubicacionNicho: "" },
   documentos: { comprobantePago: null, actaDefuncion: null, fotografiaNicho: null },
   enviado: false,
 };
@@ -57,7 +58,8 @@ export function useFormularioPasos() {
     setData((prev) => ({ ...prev, documentos: { ...prev.documentos, [campo]: valor } }));
 
   const paso1Completo = Object.values(data.titular).every((v) => v !== "" && v !== null);
-  const paso2Completo = Object.values(data.difunto).every((v) => v !== "");
+  const { dni, ...difuntoObligatorio } = data.difunto;
+  const paso2Completo = Object.values(difuntoObligatorio).every((v) => v !== "");
   const paso3Completo = Object.values(data.documentos).every((v) => v !== null);
   const paso4Completo = data.enviado;
 
@@ -87,6 +89,7 @@ export function useFormularioPasos() {
 
     formData.append("difuntoNombres", data.difunto.nombres);
     formData.append("difuntoApellidos", data.difunto.apellidos);
+    formData.append("difuntoDni", data.difunto.dni);
     formData.append("difuntoFechaFallecimiento", data.difunto.fechaFallecimiento);
     formData.append("difuntoUbicacionNicho", data.difunto.ubicacionNicho);
 
@@ -109,7 +112,6 @@ export function useFormularioPasos() {
       return;
     }
 
-    // Éxito: limpiar todo y volver al paso 1
     setData(dataInicial);
     setPasoActual(1);
     setMostrarExito(true);

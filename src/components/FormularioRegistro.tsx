@@ -9,11 +9,13 @@ function CampoArchivo({
   descripcion,
   archivo,
   onChange,
+  accept,
 }: {
   label: string;
   descripcion: string;
   archivo: File | null;
   onChange: (file: File | null) => void;
+  accept: string;
 }) {
   return (
     <div>
@@ -21,6 +23,7 @@ function CampoArchivo({
       <label className="block border-2 border-dashed border-gray-300 rounded-lg py-6 text-center hover:border-green-500 cursor-pointer">
         <input
           type="file"
+          accept={accept}
           className="hidden"
           onChange={(e) => onChange(e.target.files?.[0] ?? null)}
         />
@@ -106,6 +109,7 @@ export default function FormularioRegistro() {
                   descripcion="PDF o imagen. Máx. 10 MB."
                   archivo={data.titular.archivoDni}
                   onChange={(f) => actualizarTitular("archivoDni", f)}
+                  accept=".pdf,.jpg,.jpeg,.png"
                 />
               </div>
             </section>
@@ -117,6 +121,7 @@ export default function FormularioRegistro() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <CampoTexto label="Nombres *" value={data.difunto.nombres} onChange={(v) => actualizarDifunto("nombres", v)} />
                 <CampoTexto label="Apellidos *" value={data.difunto.apellidos} onChange={(v) => actualizarDifunto("apellidos", v)} />
+                <CampoTexto label="DNI (opcional)" value={data.difunto.dni} onChange={(v) => actualizarDifunto("dni", v)} />
                 <CampoTexto label="Fecha de fallecimiento *" type="date" value={data.difunto.fechaFallecimiento} onChange={(v) => actualizarDifunto("fechaFallecimiento", v)} />
                 <CampoTexto label="Ubicación del nicho o sepultura *" value={data.difunto.ubicacionNicho} onChange={(v) => actualizarDifunto("ubicacionNicho", v)} />
               </div>
@@ -132,12 +137,14 @@ export default function FormularioRegistro() {
                   descripcion="PDF. Máx. 10 MB."
                   archivo={data.documentos.comprobantePago}
                   onChange={(f) => actualizarDocumentos("comprobantePago", f)}
+                  accept=".pdf"
                 />
                 <CampoArchivo
                   label="Acta de defunción *"
                   descripcion="PDF. Máx. 10 MB."
                   archivo={data.documentos.actaDefuncion}
                   onChange={(f) => actualizarDocumentos("actaDefuncion", f)}
+                  accept=".pdf"
                 />
               </div>
               <CampoArchivo
@@ -145,6 +152,7 @@ export default function FormularioRegistro() {
                 descripcion="Imagen. Máx. 10 MB."
                 archivo={data.documentos.fotografiaNicho}
                 onChange={(f) => actualizarDocumentos("fotografiaNicho", f)}
+                accept=".jpg,.jpeg,.png"
               />
             </section>
           )}
@@ -159,7 +167,7 @@ export default function FormularioRegistro() {
                 </div>
                 <div>
                   <p className="font-medium text-gray-800">Difunto</p>
-                  <p>{data.difunto.nombres} {data.difunto.apellidos} — {data.difunto.fechaFallecimiento} — {data.difunto.ubicacionNicho}</p>
+                  <p>{data.difunto.nombres} {data.difunto.apellidos} {data.difunto.dni && `— DNI ${data.difunto.dni}`} — {data.difunto.fechaFallecimiento} — {data.difunto.ubicacionNicho}</p>
                 </div>
                 <div>
                   <p className="font-medium text-gray-800">Documentos</p>

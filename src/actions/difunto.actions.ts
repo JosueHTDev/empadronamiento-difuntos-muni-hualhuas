@@ -19,6 +19,7 @@ export async function registrarDifuntoAction(formData: FormData) {
 
     difuntoNombres: formData.get('difuntoNombres'),
     difuntoApellidos: formData.get('difuntoApellidos'),
+    difuntoDni: formData.get('difuntoDni'),
     difuntoFechaFallecimiento: formData.get('difuntoFechaFallecimiento'),
     difuntoUbicacionNicho: formData.get('difuntoUbicacionNicho'),
 

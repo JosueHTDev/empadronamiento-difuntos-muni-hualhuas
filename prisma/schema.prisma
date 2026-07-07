@@ -32,6 +32,7 @@ model Difunto {
   id                    Int      @id @default(autoincrement())
   nombres               String
   apellidos             String
+  dni                   String?  @unique
   fechaFallecimiento    DateTime
   ubicacionNicho        String
   fechaRegistro         DateTime @default(now())
@@ -43,7 +44,6 @@ model Difunto {
   titular               Titular  @relation(fields: [titularId], references: [id])
   titularId             Int
 
-  @@unique([nombres, apellidos, fechaFallecimiento])
   @@map("difuntos")
 }
 

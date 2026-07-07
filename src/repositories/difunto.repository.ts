@@ -8,7 +8,11 @@ export const difuntoRepository = {
     })
   },
 
-  findDuplicado: (nombres: string, apellidos: string, fechaFallecimiento: Date) => {
+  findPorDni: (dni: string) => {
+    return prisma.difunto.findUnique({ where: { dni } })
+  },
+
+  findPorNombreYFecha: (nombres: string, apellidos: string, fechaFallecimiento: Date) => {
     return prisma.difunto.findFirst({
       where: { nombres, apellidos, fechaFallecimiento },
     })
@@ -17,6 +21,7 @@ export const difuntoRepository = {
   create: (data: {
     nombres: string
     apellidos: string
+    dni?: string
     fechaFallecimiento: Date
     ubicacionNicho: string
     documentoDefuncionUrl: string

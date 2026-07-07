@@ -8,11 +8,16 @@ export function listarDifuntos() {
 }
 
 export async function registrarDifunto(input: RegistrarDifuntoInput) {
-  const duplicado = await difuntoRepository.findDuplicado(
-    input.difuntoNombres,
-    input.difuntoApellidos,
-    input.difuntoFechaFallecimiento
-  )
+  const tieneDni = !!input.difuntoDni
+
+  // Validar duplicado: por DNI si existe, si no por nombre + fecha
+  const duplicado = tieneDni
+    ? await difuntoRepository.findPorDni(input.difuntoDni!)
+    : await difuntoRepository.findPorNombreYFecha(
+        input.difuntoNombres,
+        input.difuntoApellidos,
+        input.difuntoFechaFallecimiento
+      )
 
   if (duplicado) {
     return {
@@ -41,6 +46,7 @@ export async function registrarDifunto(input: RegistrarDifuntoInput) {
   const difunto = await difuntoRepository.create({
     nombres: input.difuntoNombres,
     apellidos: input.difuntoApellidos,
+    dni: input.difuntoDni || undefined,
     fechaFallecimiento: input.difuntoFechaFallecimiento,
     ubicacionNicho: input.difuntoUbicacionNicho,
     documentoDefuncionUrl,
