@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { registrarDifuntoAction } from "@/actions/difunto.actions";
+import { schemasPorPaso } from "@/schemas/difunto.schema";
 
 export const PASOS = [
   { id: 1, nombre: "Datos del Titular" },
@@ -46,6 +47,7 @@ export function useFormularioPasos() {
   const [data, setData] = useState<FormularioData>(dataInicial);
   const [enviando, setEnviando] = useState(false);
   const [errores, setErrores] = useState<Record<string, string[]> | null>(null);
+  const [erroresPaso, setErroresPaso] = useState<Record<string, string>>({});
   const [mostrarExito, setMostrarExito] = useState(false);
 
   const actualizarTitular = (campo: keyof FormularioData["titular"], valor: any) =>
@@ -57,19 +59,92 @@ export function useFormularioPasos() {
   const actualizarDocumentos = (campo: keyof FormularioData["documentos"], valor: any) =>
     setData((prev) => ({ ...prev, documentos: { ...prev.documentos, [campo]: valor } }));
 
-  const paso1Completo = Object.values(data.titular).every((v) => v !== "" && v !== null);
-  const { dni, ...difuntoObligatorio } = data.difunto;
-  const paso2Completo = Object.values(difuntoObligatorio).every((v) => v !== "");
-  const paso3Completo = Object.values(data.documentos).every((v) => v !== null);
+  const mapearDatosAPlano = () => ({
+    titularNombres: data.titular.nombre,
+    titularApellidos: data.titular.apellido,
+    titularDni: data.titular.dni,
+    titularTelefono: data.titular.telefono,
+    titularParentesco: data.titular.parentesco,
+    titularArchivoDni: data.titular.archivoDni,
+    difuntoNombres: data.difunto.nombres,
+    difuntoApellidos: data.difunto.apellidos,
+    difuntoDni: data.difunto.dni,
+    difuntoFechaFallecimiento: data.difunto.fechaFallecimiento,
+    difuntoUbicacionNicho: data.difunto.ubicacionNicho,
+    comprobantePago: data.documentos.comprobantePago,
+    actaDefuncion: data.documentos.actaDefuncion,
+    fotografiaNicho: data.documentos.fotografiaNicho,
+  });
+
+  const validarPaso = (paso: number) => {
+    const schema = schemasPorPaso[paso - 1];
+    if (!schema) return true;
+
+    const resultado = schema.safeParse(mapearDatosAPlano());
+
+    if (!resultado.success) {
+      const nuevosErrores: Record<string, string> = {};
+      resultado.error.issues.forEach((issue) => {
+        nuevosErrores[issue.path[0] as string] = issue.message;
+      });
+      setErroresPaso(nuevosErrores);
+      return false;
+    }
+
+    setErroresPaso({});
+    return true;
+  };
+
+  const validarCampo = (nombreCampo: string, valorTemporal?: any) => {
+    const schema = schemasPorPaso[pasoActual - 1];
+    if (!schema) return;
+
+    const datosParaValidar = mapearDatosAPlano();
+    if (valorTemporal !== undefined) {
+      (datosParaValidar as any)[nombreCampo] = valorTemporal;
+    }
+
+    const resultado = schema.safeParse(datosParaValidar);
+
+    setErroresPaso((prev) => {
+      const nuevosErrores = { ...prev };
+
+      if (resultado.success) {
+        delete nuevosErrores[nombreCampo];
+        return nuevosErrores;
+      }
+
+      const issue = resultado.error.issues.find((i) => i.path[0] === nombreCampo);
+      
+      if (issue) {
+        nuevosErrores[nombreCampo] = issue.message;
+      } else {
+        delete nuevosErrores[nombreCampo];
+      }
+      return nuevosErrores;
+    });
+  };
+
+  const pasoActualEsValido = (paso: number = pasoActual) => {
+    const schema = schemasPorPaso[paso - 1];
+    if (!schema) return true;
+    return schema.safeParse(mapearDatosAPlano()).success;
+  };
+
+  const paso1Completo = pasoActualEsValido(1);
+  const paso2Completo = pasoActualEsValido(2);
+  const paso3Completo = pasoActualEsValido(3);
   const paso4Completo = data.enviado;
 
   const completados = [paso1Completo, paso2Completo, paso3Completo, paso4Completo];
 
   const siguientePaso = () => {
+    if (!validarPaso(pasoActual)) return;
     if (pasoActual < PASOS.length) setPasoActual(pasoActual + 1);
   };
 
   const pasoAnterior = () => {
+    setErroresPaso({});
     if (pasoActual > 1) setPasoActual(pasoActual - 1);
   };
 
@@ -114,6 +189,7 @@ export function useFormularioPasos() {
 
     setData(dataInicial);
     setPasoActual(1);
+    setErroresPaso({});
     setMostrarExito(true);
     setTimeout(() => setMostrarExito(false), 5000);
   };
@@ -122,6 +198,7 @@ export function useFormularioPasos() {
     setData(dataInicial);
     setPasoActual(1);
     setErrores(null);
+    setErroresPaso({});
   };
 
   return {
@@ -132,6 +209,9 @@ export function useFormularioPasos() {
     actualizarDifunto,
     actualizarDocumentos,
     completados,
+    erroresPaso,
+    validarCampo,
+    pasoActualEsValido,
     siguientePaso,
     pasoAnterior,
     enviarFormulario,

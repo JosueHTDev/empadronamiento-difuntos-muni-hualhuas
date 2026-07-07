@@ -10,17 +10,23 @@ function CampoArchivo({
   archivo,
   onChange,
   accept,
+  error,
 }: {
   label: string;
   descripcion: string;
   archivo: File | null;
   onChange: (file: File | null) => void;
   accept: string;
+  error?: string;
 }) {
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
-      <label className="block border-2 border-dashed border-gray-300 rounded-lg py-6 text-center hover:border-green-500 cursor-pointer">
+      <label
+        className={`block border-2 border-dashed rounded-lg py-6 text-center cursor-pointer ${
+          error ? "border-red-400" : "border-gray-300 hover:border-green-500"
+        }`}
+      >
         <input
           type="file"
           accept={accept}
@@ -32,6 +38,7 @@ function CampoArchivo({
         </p>
         <p className="text-xs text-gray-400 mt-1">{descripcion}</p>
       </label>
+      {error && <p className="text-red-600 text-xs mt-1">{error}</p>}
     </div>
   );
 }
@@ -40,14 +47,18 @@ function CampoTexto({
   label,
   value,
   onChange,
+  onBlur,
   placeholder,
   type = "text",
+  error,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
+  onBlur?: () => void;
   placeholder?: string;
   type?: string;
+  error?: string;
 }) {
   return (
     <div>
@@ -57,8 +68,12 @@ function CampoTexto({
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
+        onBlur={onBlur}
+        className={`w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 ${
+          error ? "border-red-400 focus:ring-red-500" : "border-gray-300 focus:ring-green-600"
+        }`}
       />
+      {error && <p className="text-red-600 text-xs mt-1">{error}</p>}
     </div>
   );
 }
@@ -72,6 +87,9 @@ export default function FormularioRegistro() {
     actualizarDifunto,
     actualizarDocumentos,
     completados,
+    erroresPaso,
+    validarCampo,
+    pasoActualEsValido,
     siguientePaso,
     pasoAnterior,
     enviarFormulario,
@@ -84,7 +102,7 @@ export default function FormularioRegistro() {
   return (
     <div className="px-6 pb-10 relative">
       {mostrarExito && (
-        <div className="fixed top-6 right-6 bg-green-700 text-white px-5 py-3 rounded-lg shadow-lg z-[999] text-sm font-medium">
+        <div className="fixed top-6 right-6 bg-green-700 text-white px-5 py-3 rounded-lg shadow-lg z-999 text-sm font-medium">
           ✓ Formulario enviado correctamente
         </div>
       )}
@@ -98,18 +116,57 @@ export default function FormularioRegistro() {
               <h2 className="text-sm font-semibold text-gray-800 mb-5">Datos del Titular o Responsable</h2>
               <div className="flex flex-col gap-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <CampoTexto label="Nombre *" value={data.titular.nombre} onChange={(v) => actualizarTitular("nombre", v)} />
-                  <CampoTexto label="Apellido *" value={data.titular.apellido} onChange={(v) => actualizarTitular("apellido", v)} />
-                  <CampoTexto label="DNI *" value={data.titular.dni} onChange={(v) => actualizarTitular("dni", v)} />
-                  <CampoTexto label="Teléfono *" placeholder="Ej: 987 654 321" value={data.titular.telefono} onChange={(v) => actualizarTitular("telefono", v)} />
-                  <CampoTexto label="Parentesco con el difunto *" value={data.titular.parentesco} onChange={(v) => actualizarTitular("parentesco", v)} />
+                  <CampoTexto
+                    label="Nombre *"
+                    placeholder="Ej: Marco Antonio"
+                    value={data.titular.nombre}
+                    onChange={(v) => actualizarTitular("nombre", v)}
+                    onBlur={() => validarCampo("titularNombres")}
+                    error={erroresPaso?.titularNombres}
+                  />
+                  <CampoTexto
+                    label="Apellido *"
+                    placeholder="Ej: Perez López"
+                    value={data.titular.apellido}
+                    onChange={(v) => actualizarTitular("apellido", v)}
+                    onBlur={() => validarCampo("titularApellidos")}
+                    error={erroresPaso?.titularApellidos}
+                  />
+                  <CampoTexto
+                    label="DNI *"
+                    placeholder="Ej: 87654321"
+                    value={data.titular.dni}
+                    onChange={(v) => actualizarTitular("dni", v)}
+                    onBlur={() => validarCampo("titularDni")}
+                    error={erroresPaso?.titularDni}
+                  />
+                  <CampoTexto
+                    label="Teléfono *"
+                    placeholder="Ej: 987 654 321"
+                    value={data.titular.telefono}
+                    onChange={(v) => actualizarTitular("telefono", v)}
+                    onBlur={() => validarCampo("titularTelefono")}
+                    error={erroresPaso?.titularTelefono}
+                  />
+                  <CampoTexto
+                    label="Parentesco con el difunto *"
+                    placeholder="Ej: Hijo(a), Nieto(a), etc."
+                    value={data.titular.parentesco}
+                    onChange={(v) => actualizarTitular("parentesco", v)}
+                    onBlur={() => validarCampo("titularParentesco")}
+                    error={erroresPaso?.titularParentesco}
+                  />
                 </div>
                 <CampoArchivo
                   label="Copia de DNI del titular o responsable *"
                   descripcion="PDF o imagen. Máx. 10 MB."
                   archivo={data.titular.archivoDni}
-                  onChange={(f) => actualizarTitular("archivoDni", f)}
                   accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={(f) => {
+                    actualizarTitular("archivoDni", f);
+                    validarCampo("titularArchivoDni", f);
+                  }}
+                  error={erroresPaso.titularArchivoDni}
                 />
               </div>
             </section>
@@ -119,11 +176,45 @@ export default function FormularioRegistro() {
             <section className="bg-white rounded-lg border border-gray-200 p-6">
               <h2 className="text-sm font-semibold text-gray-800 mb-5">Datos del Difunto</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <CampoTexto label="Nombres *" value={data.difunto.nombres} onChange={(v) => actualizarDifunto("nombres", v)} />
-                <CampoTexto label="Apellidos *" value={data.difunto.apellidos} onChange={(v) => actualizarDifunto("apellidos", v)} />
-                <CampoTexto label="DNI (opcional)" value={data.difunto.dni} onChange={(v) => actualizarDifunto("dni", v)} />
-                <CampoTexto label="Fecha de fallecimiento *" type="date" value={data.difunto.fechaFallecimiento} onChange={(v) => actualizarDifunto("fechaFallecimiento", v)} />
-                <CampoTexto label="Ubicación del nicho o sepultura *" value={data.difunto.ubicacionNicho} onChange={(v) => actualizarDifunto("ubicacionNicho", v)} />
+                <CampoTexto
+                  label="Nombres *"
+                  placeholder="Ej: Luis"
+                  value={data.difunto.nombres}
+                  onChange={(v) => actualizarDifunto("nombres", v)}
+                  onBlur={() => validarCampo("difuntoNombres")}
+                  error={erroresPaso.difuntoNombres}
+                />
+                <CampoTexto
+                  label="Apellidos *"
+                  placeholder="Ej: García Torres"
+                  value={data.difunto.apellidos}
+                  onChange={(v) => actualizarDifunto("apellidos", v)}
+                  onBlur={() => validarCampo("difuntoApellidos")}
+                  error={erroresPaso.difuntoApellidos}
+                />
+                <CampoTexto
+                  label="DNI (opcional)"
+                  placeholder="Ej: 12345678"
+                  value={data.difunto.dni}
+                  onChange={(v) => actualizarDifunto("dni", v)}
+                  onBlur={() => validarCampo("difuntoDni")}
+                  error={erroresPaso.difuntoDni}
+                />
+                <CampoTexto
+                  label="Fecha de fallecimiento *"
+                  type="date"
+                  value={data.difunto.fechaFallecimiento}
+                  onChange={(v) => actualizarDifunto("fechaFallecimiento", v)}
+                  onBlur={() => validarCampo("difuntoFechaFallecimiento")}
+                  error={erroresPaso.difuntoFechaFallecimiento}
+                />
+                <CampoTexto
+                  label="Ubicación del nicho o sepultura *"
+                  value={data.difunto.ubicacionNicho}
+                  onChange={(v) => actualizarDifunto("ubicacionNicho", v)}
+                  onBlur={() => validarCampo("difuntoUbicacionNicho")}
+                  error={erroresPaso.difuntoUbicacionNicho}
+                />
               </div>
             </section>
           )}
@@ -136,23 +227,35 @@ export default function FormularioRegistro() {
                   label="Comprobante de pago del espacio usado *"
                   descripcion="PDF. Máx. 10 MB."
                   archivo={data.documentos.comprobantePago}
-                  onChange={(f) => actualizarDocumentos("comprobantePago", f)}
                   accept=".pdf"
+                  onChange={(f) => {
+                    actualizarDocumentos("comprobantePago", f);
+                    validarCampo("comprobantePago", f);
+                  }}
+                  error={erroresPaso.comprobantePago}
                 />
                 <CampoArchivo
                   label="Acta de defunción *"
                   descripcion="PDF. Máx. 10 MB."
                   archivo={data.documentos.actaDefuncion}
-                  onChange={(f) => actualizarDocumentos("actaDefuncion", f)}
                   accept=".pdf"
+                  onChange={(f) => {
+                    actualizarDocumentos("actaDefuncion", f);
+                    validarCampo("actaDefuncion", f);
+                  }}
+                  error={erroresPaso.actaDefuncion}
                 />
               </div>
               <CampoArchivo
                 label="Fotografía del nicho o sepultura (plano o ubicación referencial a mano alzada) *"
                 descripcion="Imagen. Máx. 10 MB."
                 archivo={data.documentos.fotografiaNicho}
-                onChange={(f) => actualizarDocumentos("fotografiaNicho", f)}
                 accept=".jpg,.jpeg,.png"
+                onChange={(f) => {
+                  actualizarDocumentos("fotografiaNicho", f);
+                  validarCampo("fotografiaNicho", f);
+                }}
+                error={erroresPaso.fotografiaNicho}
               />
             </section>
           )}
@@ -204,7 +307,11 @@ export default function FormularioRegistro() {
                 </button>
               )}
               {pasoActual < 4 && (
-                <button onClick={siguientePaso} className="bg-green-700 text-white rounded-md px-5 py-2 text-sm font-medium hover:bg-green-800">
+                <button
+                  onClick={siguientePaso}
+                  disabled={!pasoActualEsValido()}
+                  className="bg-green-700 text-white rounded-md px-5 py-2 text-sm font-medium hover:bg-green-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
                   Siguiente →
                 </button>
               )}

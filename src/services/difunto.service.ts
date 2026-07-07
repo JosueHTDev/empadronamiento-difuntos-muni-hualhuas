@@ -53,7 +53,7 @@ export async function registrarDifunto(input: RegistrarDifuntoInput) {
     : await difuntoRepository.findPorNombreYFecha(
         input.difuntoNombres,
         input.difuntoApellidos,
-        input.difuntoFechaFallecimiento
+        new Date(input.difuntoFechaFallecimiento)
       )
 
   if (duplicado) {
@@ -84,7 +84,7 @@ export async function registrarDifunto(input: RegistrarDifuntoInput) {
     nombres: input.difuntoNombres,
     apellidos: input.difuntoApellidos,
     dni: input.difuntoDni || undefined,
-    fechaFallecimiento: input.difuntoFechaFallecimiento,
+    fechaFallecimiento: new Date(input.difuntoFechaFallecimiento),
     ubicacionNicho: input.difuntoUbicacionNicho,
     documentoDefuncionUrl,
     comprobanteUrl,

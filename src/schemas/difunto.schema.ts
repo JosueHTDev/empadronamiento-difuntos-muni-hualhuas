@@ -32,7 +32,13 @@ export const registrarDifuntoSchema = z.object({
     .length(8, 'El DNI debe tener 8 dígitos')
     .optional()
     .or(z.literal('')),
-  difuntoFechaFallecimiento: z.coerce.date({ error: 'Fecha inválida' }),
+  difuntoFechaFallecimiento: z
+    .string()
+    .min(1, 'Fecha requerida')
+    .refine((fecha) => {
+      const hoy = new Date().toISOString().split('T')[0]
+      return fecha < hoy
+    }, 'La fecha de fallecimiento debe ser anterior a hoy'),
   difuntoUbicacionNicho: z.string().min(2, 'Ubicación del nicho requerida'),
 
   comprobantePago: archivoPdf,
@@ -41,3 +47,28 @@ export const registrarDifuntoSchema = z.object({
 })
 
 export type RegistrarDifuntoInput = z.infer<typeof registrarDifuntoSchema>
+
+export const pasoTitularSchema = registrarDifuntoSchema.pick({
+  titularNombres: true,
+  titularApellidos: true,
+  titularDni: true,
+  titularTelefono: true,
+  titularParentesco: true,
+  titularArchivoDni: true,
+})
+
+export const pasoDifuntoSchema = registrarDifuntoSchema.pick({
+  difuntoNombres: true,
+  difuntoApellidos: true,
+  difuntoDni: true,
+  difuntoFechaFallecimiento: true,
+  difuntoUbicacionNicho: true,
+})
+
+export const pasoDocumentosSchema = registrarDifuntoSchema.pick({
+  comprobantePago: true,
+  actaDefuncion: true,
+  fotografiaNicho: true,
+})
+
+export const schemasPorPaso = [pasoTitularSchema, pasoDifuntoSchema, pasoDocumentosSchema]
