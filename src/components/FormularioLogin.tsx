@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { LuUser, LuLock, LuLoaderCircle, LuEye, LuEyeOff } from 'react-icons/lu'
 import { loginAction } from '@/actions/auth.actions'
+import Image from "next/image";
 
 export function FormularioLogin() {
   const [usuario, setUsuario] = useState('')
@@ -30,7 +31,15 @@ export function FormularioLogin() {
       className="w-full max-w-sm space-y-5 p-8 border border-gray-200 rounded-xl shadow-sm bg-white"
     >
       <div className="text-center">
-        <div className="w-12 h-12 bg-green-800 rounded-full mx-auto mb-3" />
+        <div className="mx-auto w-16 h-16 mb-2">
+          <Image
+            src="/images/logo-hualhuas.png"
+            alt="Municipalidad Distrital de Hualhuas"
+            width={60}
+            height={60}
+            className="w-10 h-10 sm:w-12 sm:h-12 md:w-12.5 md:h-12.5"
+          />
+        </div>
         <h1 className="text-xl font-bold text-green-900">Acceso administrativo</h1>
         <p className="text-sm text-gray-500 mt-1">
           Municipalidad Distrital de Hualhuas

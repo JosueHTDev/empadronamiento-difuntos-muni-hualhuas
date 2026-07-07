@@ -1,4 +1,4 @@
-import { LuPhone, LuClock, LuCircleArrowRight } from "react-icons/lu";
+import { LuPhone, LuClock, LuCircleArrowRight, LuCalendar } from "react-icons/lu";
 import { TbGrave2 } from "react-icons/tb";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,12 +22,13 @@ export default function HeaderForm() {
         </div>
         <div className="flex flex-wrap items-center gap-3 sm:gap-4 md:gap-6 text-xs sm:text-sm text-gray-600 justify-center">
           <span className="flex items-center gap-1 sm:gap-2">
-            <LuPhone className="w-3 h-3 sm:w-4 sm:h-4 text-green-700" />
-            (01) 123 4567
+            <LuCalendar className="w-3 h-3 sm:w-4 sm:h-4 text-green-700" />
+            Lunes - Viernes
+          </span>
+          <span className="flex items-center gap-1 sm:gap-2">
           </span>
           <span className="flex items-center gap-1 sm:gap-2">
             <LuClock className="w-3 h-3 sm:w-4 sm:h-4 text-green-700" />
-            <span className="hidden xs:inline">Lun - Vie: </span>
             8:00 a. m. - 4:00 p. m.
           </span>
           <Link
@@ -42,7 +43,7 @@ export default function HeaderForm() {
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 w-full h-full">
           <Image
-            src="/images/cementerio-hualhuas.png"
+            src="/images/cementerio-frontis.png"
             alt="Cementerio General de Hualhuas"
             fill
             className="object-cover"

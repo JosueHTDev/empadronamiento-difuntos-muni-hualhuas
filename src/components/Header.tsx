@@ -1,4 +1,4 @@
-import { LuPhone, LuClock, LuUser } from 'react-icons/lu'
+import { LuClock, LuUser, LuCalendar } from 'react-icons/lu'
 import { getSession } from '@/lib/session'
 import { LogoutButton } from '@/components/LogoutButton'
 
@@ -16,12 +16,12 @@ export default async function Header() {
         {!session && (
           <div className="hidden sm:flex items-center gap-4 text-xs text-green-100">
             <span className="flex items-center gap-1">
-              <LuPhone className="w-4 h-4" />
-              (064) 123-456
+              <LuCalendar className="w-4 h-4" />
+              Lunes - Viernes 
             </span>
             <span className="flex items-center gap-1">
               <LuClock className="w-4 h-4" />
-              Lun - Vie, 8am - 4pm
+              8:30 AM - 4:30 PM
             </span>
           </div>
         )}
