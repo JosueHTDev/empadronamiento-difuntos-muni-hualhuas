@@ -1,11 +1,11 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { listarDifuntos, registrarDifunto } from '@/services/difunto.service'
+import { listarRegistrosDifuntos, registrarDifunto } from '@/services/difunto.service'
 import { registrarDifuntoSchema } from '@/schemas/difunto.schema'
 
 export async function obtenerDifuntosAction() {
-  return listarDifuntos()
+  return listarRegistrosDifuntos()
 }
 
 export async function registrarDifuntoAction(formData: FormData) {

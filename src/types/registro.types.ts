@@ -4,24 +4,22 @@ export interface Documento {
   url: string;
 }
 
-export interface Difunto {
+export interface TitularResumen {
+  nombres: string;
+  apellidos: string;
+  dni: string;
+  celular: string;
+  parentesco: string;
+}
+
+export interface RegistroDifunto {
   id: string;
   nombres: string;
   apellidos: string;
+  dni: string | null;
   fechaFallecimiento: string;
   fechaRegistro: string;
   ubicacionNicho: string;
   documentos: Documento[];
-}
-
-export interface RegistroTitular {
-  id: string;
-  titular: {
-    nombres: string;
-    apellidos: string;
-    dni: string;
-    celular: string;
-    parentesco: string;
-  };
-  difuntos: Difunto[];
+  titular: TitularResumen;
 }

@@ -1,8 +1,8 @@
 import AdminRegistros from "@/components/AdminRegistros";
-import { obtenerRegistrosAction } from "@/actions/titular.actions";
+import { obtenerDifuntosAction } from "@/actions/difunto.actions";
 
 export default async function AdminPage() {
-  const registros = await obtenerRegistrosAction();
+  const registros = await obtenerDifuntosAction();
 
   return <AdminRegistros registrosIniciales={registros} />;
 }
