@@ -98,6 +98,7 @@ function CampoTexto({
   type = "text",
   error,
   icon,
+  max,
 }: {
   label: string;
   value: string;
@@ -107,6 +108,7 @@ function CampoTexto({
   type?: string;
   error?: string;
   icon?: React.ReactNode;
+  max?: string;
 }) {
   return (
     <div>
@@ -122,6 +124,7 @@ function CampoTexto({
         <input
           type={type}
           value={value}
+          max={max}
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
@@ -163,6 +166,11 @@ export default function FormularioRegistro() {
     mostrarExito,
     limpiarFormulario,
   } = useFormularioPasos();
+
+  const ayer = new Date();
+  ayer.setDate(ayer.getDate() - 1);
+
+  const fechaMaxima = ayer.toISOString().split("T")[0];
 
   return (
     <div className="px-6 pb-10 relative">
@@ -291,6 +299,7 @@ export default function FormularioRegistro() {
                   label="Fecha de fallecimiento *"
                   type="date"
                   value={data.difunto.fechaFallecimiento}
+                  max={fechaMaxima}
                   onChange={(v) => actualizarDifunto("fechaFallecimiento", v)}
                   onBlur={() => validarCampo("difuntoFechaFallecimiento")}
                   error={erroresPaso.difuntoFechaFallecimiento}
@@ -447,19 +456,19 @@ export default function FormularioRegistro() {
             </section>
           )}
 
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-0">
             <button
               onClick={limpiarFormulario}
-              className="flex items-center gap-2 border border-gray-300 text-gray-600 rounded-xl px-4 py-2.5 text-sm font-medium hover:bg-gray-50 transition-colors duration-200"
+              className="flex items-center justify-center gap-2 border border-gray-300 text-gray-600 rounded-xl px-4 py-2.5 text-sm font-medium hover:bg-gray-50 transition-colors duration-200 w-full sm:w-auto"
             >
               <FiTrash2 className="w-4 h-4" />
               Limpiar formulario
             </button>
-            <div className="flex gap-3">
+            <div className="flex gap-3 w-full sm:w-auto">
               {pasoActual > 1 && (
                 <button
                   onClick={pasoAnterior}
-                  className="flex items-center gap-2 border border-gray-300 text-gray-600 rounded-xl px-4 py-2.5 text-sm font-medium hover:bg-gray-50 transition-colors duration-200"
+                  className="flex items-center justify-center gap-2 border border-gray-300 text-gray-600 rounded-xl px-4 py-2.5 text-sm font-medium hover:bg-gray-50 transition-colors duration-200 flex-1 sm:flex-none"
                 >
                   <FiArrowLeft className="w-4 h-4" />
                   Anterior
@@ -469,7 +478,7 @@ export default function FormularioRegistro() {
                 <button
                   onClick={siguientePaso}
                   disabled={!pasoActualEsValido()}
-                  className="flex items-center gap-2 bg-green-600 text-white rounded-xl px-5 py-2.5 text-sm font-medium hover:bg-green-700 transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  className="flex items-center justify-center gap-2 bg-green-600 text-white rounded-xl px-5 py-2.5 text-sm font-medium hover:bg-green-700 transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed flex-1 sm:flex-none"
                 >
                   Siguiente
                   <FiArrowRight className="w-4 h-4" />
