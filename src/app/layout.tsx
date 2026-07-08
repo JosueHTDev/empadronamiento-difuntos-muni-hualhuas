@@ -74,7 +74,7 @@ export const metadata: Metadata = {
 
     images: [
       {
-        url: "/imagenes/og-image.png",
+        url: "/images/og-image.png",
         width: 1200,
         height: 630,
         alt: "Empadronamiento de Difuntos - Municipalidad Distrital de Hualhuas",
@@ -87,7 +87,7 @@ export const metadata: Metadata = {
     title: "Empadronamiento de Difuntos",
     description:
       "Formulario oficial para el empadronamiento de difuntos del Cementerio General de la Municipalidad Distrital de Hualhuas.",
-    images: ["/imagenes/og-image.png"],
+    images: ["/images/og-image.png"],
   },
 };
 
