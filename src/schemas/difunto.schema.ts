@@ -72,3 +72,30 @@ export const pasoDocumentosSchema = registrarDifuntoSchema.pick({
 })
 
 export const schemasPorPaso = [pasoTitularSchema, pasoDifuntoSchema, pasoDocumentosSchema]
+
+export const registrarDifuntoConUrlsSchema = z.object({
+  titularNombres: z.string().min(2, 'Nombres requeridos'),
+  titularApellidos: z.string().min(2, 'Apellidos requeridos'),
+  titularDni: z.string().length(8, 'El DNI debe tener 8 dígitos'),
+  titularTelefono: z.string().min(9, 'Teléfono inválido'),
+  titularParentesco: z.string().min(2, 'Parentesco requerido'),
+  titularArchivoDniUrl: z.string().url('URL de archivo inválida'),
+
+  difuntoNombres: z.string().min(2, 'Nombres del difunto requeridos'),
+  difuntoApellidos: z.string().min(2, 'Apellidos del difunto requeridos'),
+  difuntoDni: z.string().length(8, 'El DNI debe tener 8 dígitos').optional().or(z.literal('')),
+  difuntoFechaFallecimiento: z
+    .string()
+    .min(1, 'Fecha requerida')
+    .refine((fecha) => {
+      const hoy = new Date().toISOString().split('T')[0]
+      return fecha < hoy
+    }, 'La fecha de fallecimiento debe ser anterior a hoy'),
+  difuntoUbicacionNicho: z.string().min(2, 'Ubicación del nicho requerida'),
+
+  comprobantePagoUrl: z.string().url('URL de archivo inválida'),
+  actaDefuncionUrl: z.string().url('URL de archivo inválida'),
+  fotografiaNichoUrl: z.string().url('URL de archivo inválida'),
+})
+
+export type RegistrarDifuntoConUrlsInput = z.infer<typeof registrarDifuntoConUrlsSchema>

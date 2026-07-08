@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { registrarDifuntoAction } from "@/actions/difunto.actions";
+import { obtenerUrlSubidaAction } from "@/actions/r2.actions";
 import { schemasPorPaso } from "@/schemas/difunto.schema";
 
 export const PASOS = [
@@ -41,6 +42,22 @@ const dataInicial: FormularioData = {
   documentos: { comprobantePago: null, actaDefuncion: null, fotografiaNicho: null },
   enviado: false,
 };
+
+async function subirArchivoAR2(archivo: File, carpeta: string): Promise<string> {
+  const { urlSubida, urlPublica } = await obtenerUrlSubidaAction(archivo.name, archivo.type, carpeta);
+
+  const respuesta = await fetch(urlSubida, {
+    method: "PUT",
+    body: archivo,
+    headers: { "Content-Type": archivo.type },
+  });
+
+  if (!respuesta.ok) {
+    throw new Error(`No se pudo subir ${archivo.name}`);
+  }
+
+  return urlPublica;
+}
 
 export function useFormularioPasos() {
   const [pasoActual, setPasoActual] = useState(1);
@@ -115,7 +132,7 @@ export function useFormularioPasos() {
       }
 
       const issue = resultado.error.issues.find((i) => i.path[0] === nombreCampo);
-      
+
       if (issue) {
         nuevosErrores[nombreCampo] = issue.message;
       } else {
@@ -152,46 +169,50 @@ export function useFormularioPasos() {
     setEnviando(true);
     setErrores(null);
 
-    const formData = new FormData();
-    formData.append("titularNombres", data.titular.nombre);
-    formData.append("titularApellidos", data.titular.apellido);
-    formData.append("titularDni", data.titular.dni);
-    formData.append("titularTelefono", data.titular.telefono);
-    formData.append("titularParentesco", data.titular.parentesco);
-    if (data.titular.archivoDni) {
-      formData.append("titularArchivoDni", data.titular.archivoDni);
+    try {
+      const [titularArchivoDniUrl, comprobantePagoUrl, actaDefuncionUrl, fotografiaNichoUrl] =
+        await Promise.all([
+          subirArchivoAR2(data.titular.archivoDni!, "titulares"),
+          subirArchivoAR2(data.documentos.comprobantePago!, "difuntos"),
+          subirArchivoAR2(data.documentos.actaDefuncion!, "difuntos"),
+          subirArchivoAR2(data.documentos.fotografiaNicho!, "difuntos"),
+        ]);
+
+      const resultado = await registrarDifuntoAction({
+        titularNombres: data.titular.nombre,
+        titularApellidos: data.titular.apellido,
+        titularDni: data.titular.dni,
+        titularTelefono: data.titular.telefono,
+        titularParentesco: data.titular.parentesco,
+        titularArchivoDniUrl,
+
+        difuntoNombres: data.difunto.nombres,
+        difuntoApellidos: data.difunto.apellidos,
+        difuntoDni: data.difunto.dni,
+        difuntoFechaFallecimiento: data.difunto.fechaFallecimiento,
+        difuntoUbicacionNicho: data.difunto.ubicacionNicho,
+
+        comprobantePagoUrl,
+        actaDefuncionUrl,
+        fotografiaNichoUrl,
+      });
+
+      setEnviando(false);
+
+      if (!resultado.success) {
+        setErrores(resultado.errors ?? null);
+        return;
+      }
+
+      setData(dataInicial);
+      setPasoActual(1);
+      setErroresPaso({});
+      setMostrarExito(true);
+      setTimeout(() => setMostrarExito(false), 5000);
+    } catch (e) {
+      setEnviando(false);
+      setErrores({ general: ["Ocurrió un error al subir los archivos. Intenta nuevamente."] });
     }
-
-    formData.append("difuntoNombres", data.difunto.nombres);
-    formData.append("difuntoApellidos", data.difunto.apellidos);
-    formData.append("difuntoDni", data.difunto.dni);
-    formData.append("difuntoFechaFallecimiento", data.difunto.fechaFallecimiento);
-    formData.append("difuntoUbicacionNicho", data.difunto.ubicacionNicho);
-
-    if (data.documentos.comprobantePago) {
-      formData.append("comprobantePago", data.documentos.comprobantePago);
-    }
-    if (data.documentos.actaDefuncion) {
-      formData.append("actaDefuncion", data.documentos.actaDefuncion);
-    }
-    if (data.documentos.fotografiaNicho) {
-      formData.append("fotografiaNicho", data.documentos.fotografiaNicho);
-    }
-
-    const resultado = await registrarDifuntoAction(formData);
-
-    setEnviando(false);
-
-    if (!resultado.success) {
-      setErrores(resultado.errors ?? null);
-      return;
-    }
-
-    setData(dataInicial);
-    setPasoActual(1);
-    setErroresPaso({});
-    setMostrarExito(true);
-    setTimeout(() => setMostrarExito(false), 5000);
   };
 
   const limpiarFormulario = () => {
