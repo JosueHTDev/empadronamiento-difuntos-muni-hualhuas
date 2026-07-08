@@ -21,7 +21,9 @@ export const registrarDifuntoSchema = z.object({
   titularNombres: z.string().min(2, 'Nombres requeridos'),
   titularApellidos: z.string().min(2, 'Apellidos requeridos'),
   titularDni: z.string().length(8, 'El DNI debe tener 8 dígitos'),
-  titularTelefono: z.string().min(9, 'Teléfono inválido'),
+  titularTelefono: z
+  .string()
+  .regex(/^9\d{8}$/, 'El celular debe tener 9 dígitos y comenzar con 9'),
   titularParentesco: z.string().min(2, 'Parentesco requerido'),
   titularArchivoDni: archivoPdfOImagen,
 
@@ -77,7 +79,9 @@ export const registrarDifuntoConUrlsSchema = z.object({
   titularNombres: z.string().min(2, 'Nombres requeridos'),
   titularApellidos: z.string().min(2, 'Apellidos requeridos'),
   titularDni: z.string().length(8, 'El DNI debe tener 8 dígitos'),
-  titularTelefono: z.string().min(9, 'Teléfono inválido'),
+  titularTelefono: z
+  .string()
+  .regex(/^9\d{8}$/, 'El celular debe tener 9 dígitos y comenzar con 9'),
   titularParentesco: z.string().min(2, 'Parentesco requerido'),
   titularArchivoDniUrl: z.string().url('URL de archivo inválida'),
 

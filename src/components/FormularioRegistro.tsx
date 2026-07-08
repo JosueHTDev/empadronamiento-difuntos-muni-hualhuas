@@ -98,6 +98,7 @@ function CampoTexto({
   type = "text",
   error,
   icon,
+  max,
 }: {
   label: string;
   value: string;
@@ -107,6 +108,7 @@ function CampoTexto({
   type?: string;
   error?: string;
   icon?: React.ReactNode;
+  max?: string;
 }) {
   return (
     <div>
@@ -122,6 +124,7 @@ function CampoTexto({
         <input
           type={type}
           value={value}
+          max={max}
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
@@ -163,6 +166,11 @@ export default function FormularioRegistro() {
     mostrarExito,
     limpiarFormulario,
   } = useFormularioPasos();
+
+  const ayer = new Date();
+  ayer.setDate(ayer.getDate() - 1);
+
+  const fechaMaxima = ayer.toISOString().split("T")[0];
 
   return (
     <div className="px-6 pb-10 relative">
@@ -291,6 +299,7 @@ export default function FormularioRegistro() {
                   label="Fecha de fallecimiento *"
                   type="date"
                   value={data.difunto.fechaFallecimiento}
+                  max={fechaMaxima}
                   onChange={(v) => actualizarDifunto("fechaFallecimiento", v)}
                   onBlur={() => validarCampo("difuntoFechaFallecimiento")}
                   error={erroresPaso.difuntoFechaFallecimiento}
