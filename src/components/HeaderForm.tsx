@@ -2,6 +2,7 @@ import { LuPhone, LuClock, LuCircleArrowRight, LuCalendar } from "react-icons/lu
 import { TbGrave2 } from "react-icons/tb";
 import Image from "next/image";
 import Link from "next/link";
+import { FiPhone } from "react-icons/fi";
 
 export default function HeaderForm() {
   return (
@@ -21,19 +22,21 @@ export default function HeaderForm() {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3 sm:gap-4 md:gap-6 text-xs sm:text-sm text-gray-600 justify-center">
-          <span className="flex items-center gap-1 sm:gap-2">
-            <LuCalendar className="w-3 h-3 sm:w-4 sm:h-4 text-green-700" />
-            Lunes - Viernes
+          <span className="flex items-center gap-1.5 sm:gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200">
+            <LuCalendar className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+            <span className="font-medium text-gray-700">Lunes - Viernes</span>
           </span>
-          <span className="flex items-center gap-1 sm:gap-2">
+          <span className="flex items-center gap-1.5 sm:gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200">
+            <LuClock className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+            <span className="font-medium text-gray-700">8:30 a. m. - 5:30 p. m.</span>
           </span>
-          <span className="flex items-center gap-1 sm:gap-2">
-            <LuClock className="w-3 h-3 sm:w-4 sm:h-4 text-green-700" />
-            8:00 a. m. - 4:00 p. m.
+          <span className="flex items-center gap-1.5 sm:gap-2 bg-green-50 px-3 py-1.5 rounded-full border border-green-200">
+            <FiPhone className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+            <span className="font-medium text-gray-700">986 583 092</span>
           </span>
           <Link
             href="/login"
-            className="flex items-center gap-1 text-gray-400 hover:text-green-700 transition-colors"
+            className="flex items-center gap-1 text-gray-400 hover:text-green-700 transition-colors hover:scale-110 transform duration-200"
           >
             <LuCircleArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </Link>
